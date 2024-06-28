@@ -101,10 +101,6 @@ export class Distributor {
 
         this.logger.info(`the maticBalance of ${sender} is ${maticBalanceOfSender}`)
 
-        if (maticBalanceOfSender > BigInt(11 * 10 ** 18)) {
-            throw new Error("really?")
-        }
-
         const maticAmountForNextWallet = maticBalanceOfSender - BigInt(10 ** 17) // so that people can celebrate some first successful transactions
         const geldC = await getContract(Geld,
             this.provider,

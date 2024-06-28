@@ -9,7 +9,7 @@ Please understand the parameters and choose values which are best for you.
 
 ### Distribute
 ```sh
-deno run --allow-read --allow-write --allow-env --allow-net https://deno.land/x/distribute.ts 360 32400 1 3 <your providerURL> <your experimental test wallet pk>
+deno run --allow-read --allow-write --allow-env --allow-net https://deno.land/x/distribute/usage-example.ts 360 32400 1 3 <your providerURL> <your experimental test wallet pk>
 ```
 
 ### Distribute in Background
@@ -18,7 +18,7 @@ git clone https://github.com/moniquebaumann/distribute.git
 ```
 
 ```sh
-pm2 start -n "accumulate" --interpreter="deno" --interpreter-args="run --allow-net --allow-read --allow-write --allow-env" distribute.ts -- 360 32400 1 3 <your providerURL> <your experimental test wallet pk>
+pm2 start -n "distribute" --interpreter="deno" --interpreter-args="run --allow-net --allow-read --allow-write --allow-env" usage-example.ts -- 360 32400 1 3 <your providerURL> <your experimental test wallet pk>
 ```
 
 ## Donations
