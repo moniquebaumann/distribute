@@ -105,7 +105,7 @@ export class Distributor {
             throw new Error("really?")
         }
 
-        const maticAmountForNextWallet = maticBalanceOfSender - BigInt(10 ** 18)
+        const maticAmountForNextWallet = maticBalanceOfSender - BigInt(10 ** 17) // so that people can celebrate some first successful transactions
         const geldC = await getContract(Geld,
             this.provider,
             "./abis/geo-cash-abi.json",
