@@ -119,29 +119,29 @@ export class Distributor {
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
         
-        let amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        let amountIn = Math.floor(Math.random() * (maxAmount - minAmount) + minAmount)
         this.logger.info(`calling freedomswaps for Freiheit with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         try {
             await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
-            throw new Error(`the following error happened while buying Freiheit: ${error.message}`)
+            this.logger.error(`the following error happened while buying Freiheit: ${error.message}`)
         }
         await sleepRandomAmountOfSeconds(3, 9)
-        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        amountIn = Math.floor(Math.random() * (maxAmount - minAmount) + minAmount)
         this.logger.info(`calling freedomswaps for Friede with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
-            throw new Error(`the following error happened while buying Friede: ${error.message}`)
+            this.logger.error(`the following error happened while buying Friede: ${error.message}`)
         }
         await sleepRandomAmountOfSeconds(3, 9)
-        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        amountIn = Math.floor(Math.random() * (maxAmount - minAmount) + minAmount)
         this.logger.info(`calling freedomswaps for Geld with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
-            throw new Error(`the following error happened while buying Geo Cash: ${error.message}`)
+            this.logger.error(`the following error happened while buying Geo Cash: ${error.message}`)
         }
         const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)
