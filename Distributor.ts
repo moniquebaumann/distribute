@@ -28,7 +28,7 @@ export class Distributor {
         this.providerURL = providerURL
     }
 
-    public async distribute(minSleep: number, maxSleep: number, minAmount: number, maxAmount: number, pkTestWallet: string) {
+    public async distribute(minSleep: number, maxSleep: number, minAmount: number, maxAmount: number, pkTestWallet: string, keep: number) {
         while (this.assetRocks) {
             try {
 
@@ -38,7 +38,7 @@ export class Distributor {
                 let newWallet = await this.generateNewWallet()
                 await this.saveNewWalletInfo(newWallet)
 
-                await this.sendMaticToNewWallet(maticSender.address, [newWallet.address], maticSender.privateKey)
+                await this.sendMaticToNewWallet(maticSender.address, [newWallet.address], maticSender.privateKey, keep)
 
                 const swapper = await this.prepareTxInitiator()
 
@@ -54,13 +54,14 @@ export class Distributor {
 
     private async updateSenderHistory(newSender: any) {
         let senderHistory = JSON.parse(await Deno.readTextFileSync("./senderHistory.txt"))
+        this.logger.info(`there are ${senderHistory.length} entries in senderHistory.txt`)
         senderHistory.push(newSender)
         await Deno.writeTextFile("./senderHistory.txt", JSON.stringify(senderHistory));
 
     }
     private async prepareTxInitiator(pkTestWalletInitial?: string) {
         let generatedWallets = JSON.parse(await Deno.readTextFileSync("./generatedWallets.txt"))
-        this.logger.warning(generatedWallets.length)
+        this.logger.info(`there are ${generatedWallets.length} entries in generatedWallets.txt`)
         let pkTestWallet
         if (generatedWallets.length === 0) {
             pkTestWallet = pkTestWalletInitial
@@ -70,7 +71,7 @@ export class Distributor {
         const wallet = new ethers.Wallet(pkTestWallet, this.provider)
         const signer = await wallet.connect(this.provider)
         const txInitiator = { address: await signer.getAddress(), privateKey: pkTestWallet }
-        this.logger.info(`Transaction Initiator: ${txInitiator}`)
+        // this.logger.debug(`Transaction Initiator: ${txInitiator}`)
 
         return txInitiator
     }
@@ -92,23 +93,22 @@ export class Distributor {
     private async saveNewWalletInfo(newWallet: any) {
         let happyWallets = JSON.parse(await Deno.readTextFileSync("./generatedWallets.txt"))
         happyWallets.push(newWallet)
-        this.logger.warning(happyWallets.length)
         await Deno.writeTextFile("./generatedWallets.txt", JSON.stringify(happyWallets));
     }
 
-    private async sendMaticToNewWallet(sender: string, receivers: any[], pkTestWallet) {
+    private async sendMaticToNewWallet(sender: string, receivers: any[], pkTestWallet: string, keep:number) {
         const maticBalanceOfSender = await this.provider.getBalance(sender)
 
-        this.logger.info(`the maticBalance of ${sender} is ${maticBalanceOfSender}`)
+        this.logger.info(`the maticBalance of the sender ${sender} before sending is ${ethers.formatEther(maticBalanceOfSender)}`)
 
-        const maticAmountForNextWallet = maticBalanceOfSender - BigInt(10 ** 18) // so that people can celebrate some first successful transactions
+        const maticAmountForNextWallet = maticBalanceOfSender - BigInt(keep * 10 ** 18) // so that people can celebrate some first successful transactions
         const geldC = await getContract(Geld,
             this.provider,
             "./abis/geo-cash-abi.json",
             pkTestWallet)
 
         const tx = await geldC.distributeMatic(maticAmountForNextWallet, receivers, { value: BigInt(receivers.length) * maticAmountForNextWallet })
-        this.logger.info(`send matic tx: https://polygonscan.com/tx/${tx.hash}`)
+        this.logger.debug(`send matic tx: https://polygonscan.com/tx/${tx.hash}`)
         await tx.wait()
     }
 
@@ -117,11 +117,11 @@ export class Distributor {
         await sleepRandomAmountOfSeconds(90, 180)
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
-        this.logger.info(`the maticBalance of ${txInitiator.address} before swaps is ${maticBalanceBeforeSwaps}`)
+        this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
 
         const amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
         if (maticBalanceBeforeSwaps < BigInt(amountIn * 10 ** 18 * 3)) {
-            throw new Error(`maticBalanceBeforeSwaps ${maticBalanceBeforeSwaps} is lower than ${maxAmount}`)
+            throw new Error(`maticBalanceBeforeSwaps ${ethers.formatEther(maticBalanceBeforeSwaps)} is lower than ${maxAmount}`)
         }
 
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
