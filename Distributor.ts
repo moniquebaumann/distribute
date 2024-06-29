@@ -120,6 +120,7 @@ export class Distributor {
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
         
         let amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        amountIn = (amountIn < 1 ? 1 : amountIn)
         this.logger.info(`calling freedomswaps for Freiheit with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         try {
@@ -129,6 +130,7 @@ export class Distributor {
         }
         await sleepRandomAmountOfSeconds(3, 9)
         amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        amountIn = (amountIn < 1 ? 1 : amountIn)
         this.logger.info(`calling freedomswaps for Friede with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
@@ -137,6 +139,7 @@ export class Distributor {
         }
         await sleepRandomAmountOfSeconds(3, 9)
         amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        amountIn = (amountIn < 1 ? 1 : amountIn)
         this.logger.info(`calling freedomswaps for Geld with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
