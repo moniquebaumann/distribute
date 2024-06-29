@@ -118,12 +118,13 @@ export class Distributor {
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
-
+        
         const amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
         if (maticBalanceBeforeSwaps < BigInt(amountIn * 10 ** 18 * 3)) {
             throw new Error(`maticBalanceBeforeSwaps ${ethers.formatEther(maticBalanceBeforeSwaps)} is lower than ${maxAmount}`)
         }
-
+        
+        this.logger.info(`calling freedomswaps with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         await sleepRandomAmountOfSeconds(3, 9)
