@@ -96,7 +96,7 @@ export class Distributor {
         await Deno.writeTextFile("./generatedWallets.txt", JSON.stringify(happyWallets));
     }
 
-    private async sendMaticToNewWallet(sender: string, receivers: any[], pkTestWallet: string, keep:number) {
+    private async sendMaticToNewWallet(sender: string, receivers: any[], pkTestWallet: string, keep: number) {
         const maticBalanceOfSender = await this.provider.getBalance(sender)
 
         this.logger.info(`the maticBalance of the sender ${sender} before sending is ${ethers.formatEther(maticBalanceOfSender)}`)
@@ -114,22 +114,36 @@ export class Distributor {
 
     private async buyAssetsWithNewWallet(minAmount: number, maxAmount: number, txInitiator: any) {
 
-        await sleepRandomAmountOfSeconds(90, 180)
+        await sleepRandomAmountOfSeconds(90, 180) // to be sure the matic is there with enough block confirmations
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
         
-        const amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
-        if (maticBalanceBeforeSwaps < BigInt(amountIn * 10 ** 18 * 3)) {
-            throw new Error(`maticBalanceBeforeSwaps ${ethers.formatEther(maticBalanceBeforeSwaps)} is lower than ${maxAmount}`)
-        }
-        
-        this.logger.info(`calling freedomswaps with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
+        let amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        this.logger.info(`calling freedomswaps for Freiheit with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
-        await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        try {
+            await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            throw new Error(`the following error happened while buying Freiheit: ${error.message}`)
+        }
         await sleepRandomAmountOfSeconds(3, 9)
-        await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        this.logger.info(`calling freedomswaps for Friede with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
+        try {
+            await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            throw new Error(`the following error happened while buying Friede: ${error.message}`)
+        }
         await sleepRandomAmountOfSeconds(3, 9)
-        await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
+        this.logger.info(`calling freedomswaps for Geld with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
+        try {
+            await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            throw new Error(`the following error happened while buying Geo Cash: ${error.message}`)
+        }
+        const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
+        this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)
     }
 }
