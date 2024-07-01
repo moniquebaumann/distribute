@@ -33,6 +33,8 @@ export class Overview {
             this.logger.debug(`generatedWallet: ${generatedWallet.address} has ${ethers.formatEther(maticBalance)} Matic`)
             if (maticBalance > BigInt(1*10**18)) {
                 this.logger.info(`you might improve the cash flow with: ${generatedWallet.privateKey}`)
+            } else if (maticBalance < BigInt(1*10**16)) {
+                this.logger.debug(`generatedWallet: ${generatedWallet.address} shall have more matic ${ethers.formatEther(maticBalance)} Matic / ${generatedWallet.privateKey}`)
             }
         }
     }
