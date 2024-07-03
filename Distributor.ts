@@ -1,5 +1,6 @@
 import { Logger, sleepRandomAmountOfSeconds, ethers, FreedomSwaps } from "./deps.ts"
-import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic, geoCashABI } from "./helper.ts"
+import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic } from "./helper.ts"
+import { geoCashABI } from "./abis/geo-cash-abi.ts"
 
 export class Distributor {
 
