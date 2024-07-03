@@ -117,7 +117,7 @@ export class Distributor {
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
 
-        const amountIn = BigInt(10 ** 18)
+        const amountIn = BigInt(1618033988749894903)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         try {
             await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
