@@ -1,4 +1,4 @@
-[
+export const geoCashABI = [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",

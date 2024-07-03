@@ -24,7 +24,7 @@ export async function getLogger() {
 export function getProvider(logger: Logger, providerURL: string) {
     return new ethers.JsonRpcProvider(providerURL)
 }
-export async function getContract(contractAddress: string, contractABI: any,  provider: any, pkTestWallet: string): Promise<any> {
+export async function getContract(contractAddress: string, contractABI: any, provider: any, pkTestWallet: string): Promise<any> {
     // const signer = await provider.getSigner()
     const wallet = new ethers.Wallet(pkTestWallet, provider)
     const signer = await wallet.connect(provider)

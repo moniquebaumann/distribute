@@ -1,5 +1,5 @@
 import { Logger, sleepRandomAmountOfSeconds, ethers, FreedomSwaps } from "./deps.ts"
-import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic } from "./helper.ts"
+import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic, geoCashABI } from "./helper.ts"
 
 export class Distributor {
 
@@ -102,10 +102,7 @@ export class Distributor {
         this.logger.info(`the maticBalance of the sender ${sender} before sending is ${ethers.formatEther(maticBalanceOfSender)}`)
 
         const maticAmountForNextWallet = maticBalanceOfSender - BigInt(keep * 10 ** 18) // so that people can celebrate some first successful transactions
-        const geldC = await getContract(Geld,
-            this.provider,
-            "./abis/geo-cash-abi.json",
-            pkTestWallet)
+        const geldC = await getContract(Geld, geoCashABI, this.provider, pkTestWallet)
 
         const tx = await geldC.distributeMatic(maticAmountForNextWallet, receivers, { value: BigInt(receivers.length) * maticAmountForNextWallet })
         this.logger.debug(`send matic tx: https://polygonscan.com/tx/${tx.hash}`)
@@ -118,7 +115,7 @@ export class Distributor {
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
-        
+
         let amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
         amountIn = (amountIn < 1 ? 1 : amountIn)
         this.logger.info(`calling freedomswaps for Freiheit with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
