@@ -29,7 +29,7 @@ export class Distributor {
         this.providerURL = providerURL
     }
 
-    public async distribute(minSleep: number, maxSleep: number, minAmount: number, maxAmount: number, pkTestWallet: string, keep: number) {
+    public async distribute(minSleep: number, maxSleep: number, pkTestWallet: string, keep: number) {
         while (this.assetRocks) {
             try {
 
@@ -43,7 +43,7 @@ export class Distributor {
 
                 const swapper = await this.prepareTxInitiator()
 
-                await this.buyAssetsWithNewWallet(minAmount, maxAmount, swapper)
+                await this.buyAssetsWithNewWallet(swapper)
 
             } catch (error) {
                 this.logger.error(error.message)
@@ -110,16 +110,14 @@ export class Distributor {
         await tx.wait()
     }
 
-    private async buyAssetsWithNewWallet(minAmount: number, maxAmount: number, txInitiator: any) {
+    private async buyAssetsWithNewWallet(txInitiator: any) {
 
         await sleepRandomAmountOfSeconds(90, 180) // to be sure the matic is there with enough block confirmations
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
 
-        let amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
-        amountIn = (amountIn < 1 ? 1 : amountIn)
-        this.logger.info(`calling freedomswaps for Freiheit with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
+        const amountIn = BigInt(10 ** 18)
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         try {
             await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
@@ -127,18 +125,12 @@ export class Distributor {
             this.logger.error(`the following error happened while buying Freiheit: ${error.message}`)
         }
         await sleepRandomAmountOfSeconds(3, 9)
-        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
-        amountIn = (amountIn < 1 ? 1 : amountIn)
-        this.logger.info(`calling freedomswaps for Friede with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
             this.logger.error(`the following error happened while buying Friede: ${error.message}`)
         }
         await sleepRandomAmountOfSeconds(3, 9)
-        amountIn = Math.round(Math.random() * (maxAmount - minAmount) + minAmount)
-        amountIn = (amountIn < 1 ? 1 : amountIn)
-        this.logger.info(`calling freedomswaps for Geld with ${amountIn} which shall be in range of [${minAmount}, ${maxAmount}]`)
         try {
             await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
