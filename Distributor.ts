@@ -19,7 +19,7 @@ export class Distributor {
     private provider: any
     private providerURL: string
     private readonly poolFee = 10000
-    private readonly slippage = 30
+    private readonly slippage = 1
     private assetRocks = true
 
 
