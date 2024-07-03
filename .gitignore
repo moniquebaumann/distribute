@@ -4,3 +4,4 @@ generatedWallets.txt
 senderHistory.txt
 experiments
 example-start-script.sh
+node_modules

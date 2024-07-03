@@ -41,8 +41,8 @@ export class Overview {
 
             const erc20Contract = await getContract(tokenIn, freiheitsABI, this.provider, pkTestWallet)
             const tokenBalance = await erc20Contract.balanceOf(generatedWallet.address)
-            this.logger.debug(`generatedWallet: ${generatedWallet.address} has ${ethers.formatEther(tokenBalance)} wMatic`)
             if (tokenBalance > 0) {
+                this.logger.debug(`generatedWallet: ${generatedWallet.address} has ${ethers.formatEther(tokenBalance)} ${await erc20Contract.name()}`)
                 this.logger.info(`you might improve the cash flow with: ${generatedWallet.privateKey}`)
                 const freedomSwaps = await FreedomSwaps.getInstance(providerURL)
                 await freedomSwaps.unwrap(generatedWallet.privateKey)
