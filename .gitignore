@@ -3,5 +3,6 @@ warnings-errors.txt
 generatedWallets.txt
 senderHistory.txt
 experiments
+experiments2
 example-start-script.sh
 node_modules

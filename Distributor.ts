@@ -113,7 +113,7 @@ export class Distributor {
 
     private async buyAssetsWithNewWallet(txInitiator: any) {
 
-        await sleepRandomAmountOfSeconds(45, 81) // to be sure the matic is there with enough block confirmations
+        await sleepRandomAmountOfSeconds(90, 360) // to be sure the matic is there with enough block confirmations
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
