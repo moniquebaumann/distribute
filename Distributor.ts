@@ -145,7 +145,7 @@ export class Distributor {
                 const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Spass)
                 this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
             }
-            await freedomSwaps.swap(Matic, Spass, this.lightSpeed * 10 ** 9, this.poolFee, this.slippage, txInitiator.privateKey)
+            await freedomSwaps.swap(Matic, Spass, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
             this.logger.error(`the following error happened while buying Spass: ${error.message}`)
         }
