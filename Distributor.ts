@@ -1,5 +1,5 @@
-import { Logger, sleepRandomAmountOfSeconds, ethers, FreedomSwaps } from "./deps.ts"
-import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic } from "./helper.ts"
+import { Logger, sleepRandomAmountOfSeconds, ethers, FreedomSwaps, KlassiToni } from "./deps.ts"
+import { getLogger, getProvider, getContract, Freiheit, Friede, Geld, Matic, itsAKindOfMagic } from "./helper.ts"
 import { geoCashABI } from "./abis/geo-cash-abi.ts"
 
 export class Distributor {
@@ -17,6 +17,7 @@ export class Distributor {
 
     private logger: Logger
     private provider: any
+    private lightSpeed: any
     private providerURL: string
     private readonly poolFee = 10000
     private readonly slippage = 1
@@ -112,12 +113,13 @@ export class Distributor {
 
     private async buyAssetsWithNewWallet(txInitiator: any) {
 
-        await sleepRandomAmountOfSeconds(90, 180) // to be sure the matic is there with enough block confirmations
+        await sleepRandomAmountOfSeconds(45, 81) // to be sure the matic is there with enough block confirmations
         const maticBalanceBeforeSwaps = await this.provider.getBalance(txInitiator.address)
 
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} before swaps is ${ethers.formatEther(maticBalanceBeforeSwaps)}`)
 
-        const amountIn = BigInt(1618033988749894903)
+        // const amountIn = BigInt(1618033988749894903)
+        const amountIn = BigInt((itsAKindOfMagic() * 10 ** 18).toFixed(0))
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
         try {
             await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
@@ -132,9 +134,20 @@ export class Distributor {
         }
         await sleepRandomAmountOfSeconds(3, 9)
         try {
-            await freedomSwaps.swap(Matic, Geld, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+            await freedomSwaps.swap(Matic, Geld, BigInt(Number(amountIn)), this.poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
             this.logger.error(`the following error happened while buying Geo Cash: ${error.message}`)
+        }
+        await sleepRandomAmountOfSeconds(3, 9)
+        try {
+            const Spass = "0x33b5624f20b41e2bc6d71fd039e3bd05524c1d82"
+            if (this.lightSpeed === undefined) {
+                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Spass)
+                this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
+            }
+            await freedomSwaps.swap(Matic, Spass, this.lightSpeed * 10 ** 9, this.poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            this.logger.error(`the following error happened while buying Spass: ${error.message}`)
         }
         const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)

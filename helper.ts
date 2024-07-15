@@ -30,3 +30,20 @@ export async function getContract(contractAddress: string, contractABI: any, pro
     const signer = await wallet.connect(provider)
     return new ethers.Contract(contractAddress, contractABI, signer)
 }
+export function itsAKindOfMagic() {
+
+    const precision = 360
+    let counter = 0
+    let result = 0
+
+    return g(precision, counter, result)
+}
+
+function g(precision, counter, result) {
+    counter++
+    if (counter === precision) {
+        return result
+    } else {
+        return 1 + 1 / g(precision, counter, result)
+    }
+}
