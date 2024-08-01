@@ -149,6 +149,17 @@ export class Distributor {
         } catch (error) {
             this.logger.error(`the following error happened while buying Spass: ${error.message}`)
         }
+        await sleepRandomAmountOfSeconds(3, 9)
+        try {
+            const Reality = "0xf0d0de34d35fb646ea6a4d3e92b629e92654d2c5"
+            if (this.lightSpeed === undefined) {
+                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Reality)
+                this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
+            }
+            await freedomSwaps.swap(Matic, Reality, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            this.logger.error(`the following error happened while buying REAL: ${error.message}`)
+        }
         const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)
     }
