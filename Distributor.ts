@@ -121,44 +121,55 @@ export class Distributor {
         // const amountIn = BigInt(1618033988749894903)
         const amountIn = BigInt((itsAKindOfMagic() * 10 ** 18).toFixed(0))
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
+        // try {
+        //     await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        // } catch (error) {
+        //     this.logger.error(`the following error happened while buying Freiheit: ${error.message}`)
+        // }
+        // await sleepRandomAmountOfSeconds(3, 9)
+        // try {
+        //     await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
+        // } catch (error) {
+        //     this.logger.error(`the following error happened while buying Friede: ${error.message}`)
+        // }
+        // await sleepRandomAmountOfSeconds(3, 9)
+        // try {
+        //     await freedomSwaps.swap(Matic, Geld, BigInt(Number(amountIn)), this.poolFee, this.slippage, txInitiator.privateKey)
+        // } catch (error) {
+        //     this.logger.error(`the following error happened while buying Geo Cash: ${error.message}`)
+        // }
+        // await sleepRandomAmountOfSeconds(3, 9)
+        // try {
+        //     const Spass = "0x33b5624f20b41e2bc6d71fd039e3bd05524c1d82"
+        //     if (this.lightSpeed === undefined) {
+        //         const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Spass)
+        //         this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
+        //     }
+        //     await freedomSwaps.swap(Matic, Spass, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
+        // } catch (error) {
+        //     this.logger.error(`the following error happened while buying Spass: ${error.message}`)
+        // }
+        // await sleepRandomAmountOfSeconds(3, 9)
+        // try {
+        //     const Reality = "0xf0d0de34d35fb646ea6a4d3e92b629e92654d2c5"
+        //     if (this.lightSpeed === undefined) {
+        //         const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Reality)
+        //         this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
+        //     }
+        //     await freedomSwaps.swap(Matic, Reality, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
+        // } catch (error) {
+        //     this.logger.error(`the following error happened while buying REAL: ${error.message}`)
+        // }
         try {
-            await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
-        } catch (error) {
-            this.logger.error(`the following error happened while buying Freiheit: ${error.message}`)
-        }
-        await sleepRandomAmountOfSeconds(3, 9)
-        try {
-            await freedomSwaps.swap(Matic, Friede, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
-        } catch (error) {
-            this.logger.error(`the following error happened while buying Friede: ${error.message}`)
-        }
-        await sleepRandomAmountOfSeconds(3, 9)
-        try {
-            await freedomSwaps.swap(Matic, Geld, BigInt(Number(amountIn)), this.poolFee, this.slippage, txInitiator.privateKey)
-        } catch (error) {
-            this.logger.error(`the following error happened while buying Geo Cash: ${error.message}`)
-        }
-        await sleepRandomAmountOfSeconds(3, 9)
-        try {
-            const Spass = "0x33b5624f20b41e2bc6d71fd039e3bd05524c1d82"
+            const Schweizer = "0xdbc5a5b3e6cb3cbcdb4b62c1a4c182d08da3e4f2"
             if (this.lightSpeed === undefined) {
-                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Spass)
+                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Schweizer)
                 this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
             }
-            await freedomSwaps.swap(Matic, Spass, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
+            const poolFee = 3000
+            await freedomSwaps.swap(Matic, Schweizer, this.lightSpeed * BigInt(10 ** 9), poolFee, this.slippage, txInitiator.privateKey)
         } catch (error) {
-            this.logger.error(`the following error happened while buying Spass: ${error.message}`)
-        }
-        await sleepRandomAmountOfSeconds(3, 9)
-        try {
-            const Reality = "0xf0d0de34d35fb646ea6a4d3e92b629e92654d2c5"
-            if (this.lightSpeed === undefined) {
-                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Reality)
-                this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
-            }
-            await freedomSwaps.swap(Matic, Reality, this.lightSpeed * BigInt(10 ** 9), this.poolFee, this.slippage, txInitiator.privateKey)
-        } catch (error) {
-            this.logger.error(`the following error happened while buying REAL: ${error.message}`)
+            this.logger.error(`the following error happened while buying Schweizer: ${error.message}`)
         }
         const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)
