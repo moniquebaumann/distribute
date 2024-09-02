@@ -121,6 +121,14 @@ export class Distributor {
         // const amountIn = BigInt(1618033988749894903)
         const amountIn = BigInt((itsAKindOfMagic() * 10 ** 18).toFixed(0))
         const freedomSwaps = await FreedomSwaps.getInstance(this.providerURL)
+        try {
+            const Schweizer = "0xDbC5A5b3E6Cb3CbcdB4B62C1a4C182D08DA3e4F2"
+            const poolFee = 3000
+            this.logger.info(`amountToBeSwapped ${amountIn} ${txInitiator.privateKey}`)
+            await freedomSwaps.swap(Matic, Schweizer, amountIn, poolFee, this.slippage, txInitiator.privateKey)
+        } catch (error) {
+            this.logger.error(`the following error happened while buying Schweizer: ${error.message}`)
+        }
         // try {
         //     await freedomSwaps.swap(Matic, Freiheit, amountIn, this.poolFee, this.slippage, txInitiator.privateKey)
         // } catch (error) {
@@ -160,17 +168,7 @@ export class Distributor {
         // } catch (error) {
         //     this.logger.error(`the following error happened while buying REAL: ${error.message}`)
         // }
-        try {
-            const Schweizer = "0xdbc5a5b3e6cb3cbcdb4b62c1a4c182d08da3e4f2"
-            if (this.lightSpeed === undefined) {
-                const klassiToni = await KlassiToni.getInstance(this.providerURL, txInitiator.privateKey, Schweizer)
-                this.lightSpeed = await klassiToni.getLightSpeedInMetersPerSecond()
-            }
-            const poolFee = 3000
-            await freedomSwaps.swap(Matic, Schweizer, this.lightSpeed * BigInt(10 ** 9), poolFee, this.slippage, txInitiator.privateKey)
-        } catch (error) {
-            this.logger.error(`the following error happened while buying Schweizer: ${error.message}`)
-        }
+        
         const maticBalanceAfterSwaps = await this.provider.getBalance(txInitiator.address)
         this.logger.info(`the maticBalance of the swap initiator ${txInitiator.address} after the swaps is ${ethers.formatEther(maticBalanceAfterSwaps)}`)
     }
